@@ -1,0 +1,27 @@
+# Makefile
+CC = gcc
+CFLAGS = -Wall -g
+BISON = bison -d
+FLEX = flex
+
+TARGET = calculator
+HEADERS = calc3.h
+
+all: $(TARGET)
+
+$(TARGET): mini_calc.tab.c lex.yy.c $(HEADERS)
+	$(CC) $(CFLAGS) -o $@ mini_calc.tab.c lex.yy.c -lm
+
+mini_calc.tab.c mini_calc.tab.h: mini_calc.y $(HEADERS)
+	$(BISON) $< -o mini_calc.tab.c
+
+lex.yy.c: mini_calc.l mini_calc.tab.h $(HEADERS)
+	$(FLEX) mini_calc.l
+
+clean:
+	rm -f mini_calc.tab.c mini_calc.tab.h lex.yy.c $(TARGET)
+
+run: $(TARGET)
+	./$(TARGET)
+
+.PHONY: all clean run
