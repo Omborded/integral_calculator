@@ -10,11 +10,9 @@
         TOKEN_SIN,
         TOKEN_TAN,
         TOKEN_CTAN,
-        TOKEN_EXP,
         TOKEN_LOG,
         TOKEN_LN,
         TOKEN_ABS,
-        TOKEN_PI,
         TOKEN_EOF
     } FUNCTION;
 %}
@@ -34,36 +32,40 @@
 "**"|"^" {  return POWER; }
 
 sin {
-    return yylval.func = TOKEN_SIN;
+    yylval.func = TOKEN_SIN;
     return FUNCTION;
 }
 cos {
-    return yylval.func = TOKEN_COS;
+     yylval.func = TOKEN_COS;
     return FUNCTION;
 }
 tan {
-    return yylval.func = TOKEN_TAN;
+     yylval.func = TOKEN_TAN;
     return FUNCTION;
 }
 ctan {
-    return yylval.func = TOKEN_CTAN;
-    return FUNCTION;
-}
-exp {
-    return yylval.func = TOKEN_EXP;
+     yylval.func = TOKEN_CTAN;
     return FUNCTION;
 }
 abs {
-    return yylval.func = TOKEN_ABS;
+     yylval.func = TOKEN_ABS;
     return FUNCTION;
 }
 log {
-    return yylval.func = TOKEN_LOG;
+     yylval.func = TOKEN_LOG;
     return FUNCTION;
 }
 ln {
-    return yylval.func = TOKEN_LN;
+     yylval.func = TOKEN_LN;
     return FUNCTION;
+}
+e {
+    yylval.dval = 2.718281828;
+    return INTEGER;
+}
+pi {
+    yylval.dval = 3.141592653;
+    return INTEGER;
 }
 [ \t] { /* ignore whitespace */ }
 
