@@ -6,6 +6,16 @@
 
 typedef enum { typeCon, typeId, typeOpr, typeInt } nodeEnum;
 
+typedef enum{
+        TOKEN_COS = 300,
+        TOKEN_SIN = 301,
+        TOKEN_TAN = 302,
+        TOKEN_CTAN = 303,
+        TOKEN_LOG = 304,
+        TOKEN_LN = 305,
+        TOKEN_ABS = 306,
+} FuncType;
+
 typedef struct nodeTypeTag {
     nodeEnum type;
     union {

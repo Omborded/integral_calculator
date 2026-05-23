@@ -5,16 +5,6 @@
     #include <math.h>
     #include <string.h>
     void yyerror(const char *s);
-    typedef enum{
-        TOKEN_COS,
-        TOKEN_SIN,
-        TOKEN_TAN,
-        TOKEN_CTAN,
-        TOKEN_LOG,
-        TOKEN_LN,
-        TOKEN_ABS,
-        TOKEN_EOF
-    } FUNCTION;
 %}
 %option noyywrap
 %%
@@ -28,6 +18,9 @@
 }
 [-+()=*/] {
     return *yytext;
+}
+[x] { yylval.index = 0;
+      return VARIABLE;
 }
 "**"|"^" {  return POWER; }
 

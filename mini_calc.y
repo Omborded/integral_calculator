@@ -23,11 +23,13 @@
 %union {
     double dval;
     nodeType *nPtr;
-    int func;
+    FuncType func;
+    int index;
 };
 
 %token <dval> INTEGER
 %token <func> FUNCTION
+%token <index> VARIABLE
 
 %left '+' '-'
 %left '*' '/'
@@ -38,13 +40,12 @@
 %%
 
 program:
-        | program line
+         line
         ;
 line:
         expr '\n' { 
             if(global_expr) freeNode(global_expr);
             global_expr = $1;
-            printf("= %g\n", ex($1, 0)); 
         }
         | error '\n' { 
             yyerrok; 
@@ -54,6 +55,7 @@ line:
 
 expr:
         INTEGER                     { $$ = con($1); }
+        | VARIABLE                  { $$ = id($1); }
         | expr '+' expr             { $$ = opr('+', 2, $1, $3); }
         | expr '-' expr             { $$ = opr('-', 2, $1, $3); }
         | expr '*' expr             { $$ = opr('*', 2, $1, $3); }
@@ -69,18 +71,27 @@ expr:
 int main() {
     double a,b;
     int n;
+    char line[256];
     printf("нижняя граница интеграла a = ");
-    scanf("%lf\n", &a);
-    printf("врехняя граница интеграла b = ");
-    scanf("%lf\n", &b);
+    scanf("%lf", &a);
+    printf("верхняя граница интеграла b = ");
+    scanf("%lf", &b);
     printf("Количество шагов = ");
-    scanf("%d\n", &n);
+    scanf("%d", &n);
 
     printf("Введите выражение: ");
+    while(getchar() != '\n');
+
+    fgets(line, sizeof(line), stdin);
+    extern void *yy_scan_string(const char *str);
+    extern void yy_delete_buffer(void *buffer);
+
+    void *buffer = yy_scan_string(line);
     yyparse();
+    yy_delete_buffer(buffer);
+
     double result = Simpson(global_expr, a, b, n);
     printf("Результат : %lf\n", result);
-    printf("Прожмите сочетание клавиш Ctrl+D чтобы выйти.\n");
     return 0;
 }
 
@@ -142,7 +153,7 @@ double ex(nodeType *p, double x)
             case '-':      return ex(p->u.opr.op[0],x) - ex(p->u.opr.op[1],x);
             case '*':      return ex(p->u.opr.op[0],x) * ex(p->u.opr.op[1],x);
             case '/':      return ex(p->u.opr.op[0],x) / ex(p->u.opr.op[1],x);
-            case POWER:    return pow(ex(p->u.opr.op[0],x),  ex(p->u.opr.op[1],x));
+            case POWER:    return pow(ex(p->u.opr.op[0],x), ex(p->u.opr.op[1],x));
             case TOKEN_SIN: return sin(ex(p->u.opr.op[0],x));
             case TOKEN_COS: return cos(ex(p->u.opr.op[0],x));
             case TOKEN_TAN: return tan(ex(p->u.opr.op[0],x));
@@ -163,18 +174,19 @@ void yyerror(const char *s) {
 double Simpson(nodeType *expr, double a, double b, int n)
 {
     if(a >= b){
-        printf("нижняя граница должна быть меньше верхней границы. Повторите ввод\n");
+        printf("нижняя граница должна быть меньше верхней границы.\n");
         return 0;
     }
     double h = (b - a)/n;
     double result = ex(expr, a) + ex(expr, b);
     for (int i =1; i <n; i++){
         double x = a + i *h;
+        double fx = ex(expr, x);
         if (i% 2 == 0){
-            result += 2*ex(expr, x);
+            result += 2*fx;
         }
         else{
-            result += 4*ex(expr, x);
+            result += 4*fx;
         }
     }
     result *= h/3;
