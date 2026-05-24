@@ -4,10 +4,24 @@
     #include "calc3.h"
     #include <math.h>
     #include <string.h>
+    #include <ctype.h>
     void yyerror(const char *s);
 %}
 %option noyywrap
 %%
+[0-9]+[x] {
+    char *s = yytext;
+    char num[12];
+    int i=0;
+    while (isdigit(s[i])){
+        num[i] = s[i];
+        i++;
+    }
+    num[i] = '\0';
+    yylval.dval = atof(num);
+    yyless(i);
+    return INTEGER;
+}
 [0-9]+ {
     yylval.dval = atof(yytext);
     return INTEGER;
@@ -50,6 +64,10 @@ log {
 }
 ln {
      yylval.func = TOKEN_LN;
+    return FUNCTION;
+}
+sqrt {
+    yylval.func = TOKEN_SQRT;
     return FUNCTION;
 }
 e {

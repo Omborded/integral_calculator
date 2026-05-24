@@ -14,6 +14,7 @@ typedef enum{
         TOKEN_LOG = 304,
         TOKEN_LN = 305,
         TOKEN_ABS = 306,
+        TOKEN_SQRT = 307
 } FuncType;
 
 typedef struct nodeTypeTag {
