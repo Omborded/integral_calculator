@@ -4,8 +4,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// Структура для строения AST дерева. Запоминает каждую константуЮ операнд, переменную, функцию
 typedef enum { typeCon, typeId, typeOpr, typeInt } nodeEnum;
 
+// словарь функций. Каждая функция имеет свой номер чтобы избежать конфликт с назначениями кодов из ASCII (значения до 255)
+// Кодировка токенов в бизоне начинается с 258
 typedef enum{
         TOKEN_COS = 300,
         TOKEN_SIN = 301,
@@ -17,6 +20,7 @@ typedef enum{
         TOKEN_SQRT = 307
 } FuncType;
 
+// объявление каждого поля структуры
 typedef struct nodeTypeTag {
     nodeEnum type;
     union {
